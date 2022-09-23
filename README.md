@@ -9,7 +9,7 @@ to run on line with heroku : https://recom-bundle.herokuapp.com/
 
  2 BTL bundles recommende for each customers.
 
-for additional data sources go to this link below:
+for additional data sources go to this link below: https://drive.google.com/drive/folders/1jKlJcppBPPJqiCvj3u4nSbTAfz8hGrfu?usp=sharing
  
   1-) For Exploratory Analysis open Assessment_Exploratory_analysis.ipynb  file
   
