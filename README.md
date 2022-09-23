@@ -1,22 +1,24 @@
-# rcom_bundle
+# bp_rcom_bundle
 Recommandation Bundle
 
-pour lancer en local: 
+to run in local: 
 
     streamlit run app.py 
 
-pour lancer en ligne: https://recom-bundle.herokuapp.com/
+to run on line with heroku : https://recom-bundle.herokuapp.com/
 
-Proposition à chaque client 2 bundles.
+ 2 BTL bundles recommende for each customers.
 
-
-  1-)Statistique descriptive: exploration de donnees 
+for additional data sources go to this link below:
+ 
+  1-) For Exploratory Analysis open Assessment_Exploratory_analysis.ipynb  file
   
-  2-)Profiling Segmentation
-    
-   Dans bundle_recom.py se trouve le code Streamlit pour la visualisation et la recommandation.
-   Veiller à chaanger les liens des fichiers CSV.
+  2-) Kmean clustering and profiling open  clustering profiling.ipynb fil
+   
+  3) Three way to perform recommandation
+      - for unsunbribes custimers we recommend the two top BTL bundle by soubscibtions
+      - Kmean recommandatin :  For each clusters we Take the two top bundle and on this we recommend two best BTL bundle base on historical data of the customers in the clusters
+      - Collaboratif filtering item-item base : for each customers we look your top bundle and their similarities base on CL algorithms. And depends on the similarities we recommende two best bundle for the customers
+   
   
-  3-)Proposition
 
-Changer le lien du fichier 'Bundles Subscription Behavior.csv' dans le code orange_btl.ipyb
