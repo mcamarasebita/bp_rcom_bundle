@@ -145,7 +145,7 @@ if aaa:
     recom_content_content2=pd.DataFrame(recom_content_content2)
     st.sidebar.write(recom_content_content2.head(2))
 
-st.sidebar.markdown("######  Recommendation for unsubscribe bundle customers ")
+st.sidebar.markdown("###  Recommendation for unsubscribe bundle customers ")
 # tto select a user for non-subscribers
 aa= st.sidebar.selectbox("Select USer", pd.unique(df_recom_2bundle_unsubs["msisdn_id"]))
 #Propose 2 bunble 
@@ -264,7 +264,7 @@ def reco(num):
                     bundle.append(T1.bundle_name[0])
                     bundle.append('BTL 4G Bundle 8 Weekly')# Upselling
                     
-    return bundle
+    return bundle, st.write(bundle)
 
 
 
