@@ -145,7 +145,7 @@ if aaa:
     recom_content_content2=pd.DataFrame(recom_content_content2)
     st.sidebar.write(recom_content_content2.head(2))
 
-st.sidebar.markdown("###### Bundle_collaboratif_filtering_engine for unsubs ")
+st.sidebar.markdown("######  Recommendation for unsubscribe bundle customers ")
 # tto select a user for non-subscribers
 aa= st.sidebar.selectbox("Select USer", pd.unique(df_recom_2bundle_unsubs["msisdn_id"]))
 #Propose 2 bunble 
@@ -164,37 +164,108 @@ df_data_BTL.rename(columns = {'msisdn_id_x': 'msisdn_id'},inplace = True)
 
 df_kmeans_bundle = df_kmeans.merge(df_data_BTL,on = 'msisdn_id',how='left')
 def reco(num):
-  t = df_kmeans_bundle[df_kmeans_bundle.msisdn_id==num].reset_index()
-  T1 = t.groupby(['labels','bundle_name'])['msisdn_id'].count().nlargest(2).reset_index()
-  if t.labels[0]== 0:
-    if len(T1) == 0:
-      return 'BTL 4G Bundle 1 Daily'
-    elif T1.bundle_name[0] == 'BTL 4G Bundle 1 Daily':
-      return'BTL 4G Bundle 14 Weekly '
-    elif T1.bundle_name[0] == 'BTL 4G Bundle 14 Weekly':
-      return'BTL 4G Bundle 7 Weekly'
-    else:
-      return T1.bundle_name[0]
+    bundle = []
+    t = df_kmeans_bundle[df_kmeans_bundle.msisdn_id==num].reset_index()
+    T1 = t.groupby(['labels','bundle_name','price_point'],dropna=False)['msisdn_id'].count().nlargest(2).reset_index()
 
-  if t.labels[0]== 1:
-    if len(T1) == 0 :
-      return 'BTL 4G Bundle 7 Weekly'
-    elif T1.bundle_name[0] == 'BTL 4G Bundle 7 Weekly':
-      return 'BTL 4G Bundle 8 Weekly'
-    elif T1.bundle_name[0] == 'BTL 4G Bundle 8 Weekly':
-      return'BTL 4G Bundle 9 Weekly'
-    else:
-      return T1.bundle_name[0]
+# we will perform recommendation to customer in labels 0 like this
+# customer without bundle subscription will be recommend BTL 4G Bundle 1 Daily 
+# customer with bundle BTL 4G Bundle 1 Daily will be recommend  BTL 4G Bundle 14 Weekly 
+# customer with bundle BTL 4G Bundle 14 Weekly will be recommend BTL 4G Bundle 7 Weekly (Upselling)
+    if T1.labels[0]== 0: # cluster 0
+        bundle.append(T1.labels[0])
+        if len(T1) == 0 :
+            bundle.append('BTL 4G Bundle 1 Daily')
+            bundle.append('BTL 4G Bundle 14 Weekly')
+        elif len(T1) == 1 :
+            if T1.bundle_name[0] == 'BTL 4G Bundle 1 Daily ':
+                    bundle.append('BTL 4G Bundle 1 Daily')
+                    bundle.append('BTL 4G Bundle 14 Weekly')
+            elif T1.bundle_name[0] == 'BTL 4G Bundle 14 Weekly':
+                    bundle.append('BTL 4G Bundle 14 Weekly')
+                    bundle.append('BTL 4G Bundle 7 Weekly') # uspselling
+            else:
+                if T1.price_point[0] > 22 : # I want to prevent down - selling
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append('BTL 4G Bundle 7 Weekly')
+                else:
+                    bundle.append('BTL 4G Bundle 14 Weekly')
+                    bundle.append('BTL 4G Bundle 7 Weekly')
+        else:     
+            if T1.price_point[1] > 22:  # I want to prevent down - selling
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append(T1.bundle_name[1])
+            else:
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append('BTL 4G Bundle 7 Weekly')# Upselling
 
-  if t.labels[0]== 2:
-    if len(T1) == 0 :
-      return 'TL 4G Bundle 7 Weekly'
-    elif T1.bundle_name[0] == 'BTL 4G Bundle 7 Weekly':
-      return'BTL 4G Bundle 8 Weekly'
-    elif T1.bundle_name[0] == 'BTL 4G Bundle 8 Weekly':
-      return 'BTL 4G Bundle 9 Weekly'
-    else:
-      return T1.bundle_name[0]
+# we will perform recommendation to customer in labels 1 like this
+# customer without bundle subscription will be recommend BTL 4G Bundle 14 Weekly
+# customer with bundle BTL 4G Bundle 14 Weekly will be recommend BTL 4G Bundle 7 Weekly 
+# customer with bundle BTL 4G Bundle 7 Weekly   will be recommend BTL 4G Bundle 8 Weekly(Upselling
+    
+    
+    if T1.labels[0]== 1:   # cluster 1
+        bundle.append(T1.labels[0])
+        if len(T1) == 0 :
+            bundle.append('BTL 4G Bundle 7 Weekly')
+            bundle.append('BTL 4G Bundle 14 Weekly')
+        elif len(T1) == 1 :
+            if T1.bundle_name[0] == 'BTL 4G Bundle 14 Weekly':
+                    bundle.append('BTL 4G Bundle 7 Weekly')
+                    bundle.append('BTL 4G Bundle 14 Weekly')
+            elif T1.bundle_name[0] == 'BTL 4G Bundle 7 Weekly':
+                    bundle.append('BTL 4G Bundle 7 Weekly')
+                    bundle.append('BTL 4G Bundle 8 Weekly')
+            else:
+                if T1.price_point[0] > 35 : # I want to prevent down - selling
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append('BTL 4G Bundle 8 Weekly')
+                else:
+                    bundle.append('BTL 4G Bundle 7 Weekly')
+                    bundle.append('BTL 4G Bundle 8 Weekly')
+        else:     
+            if T1.price_point[1] > 35:  # I want to prevent down - selling
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append(T1.bundle_name[1])
+            else:
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append('BTL 4G Bundle 8 Weekly')# Upselling
+
+# we will perform recommendation to customer in labels 2 like this
+# customer without bundle subscription will be recommend BTL 4G BTL 4G Bundle 7 Weekly  
+# customer with BTL 4G Bundle 7 Weekly  will be recommend BTL 4G Bundle 8 Weekly 
+# customer with bundle BTL 4G Bundle 8 Weekly  will be recommend BTL 4G Bundle 9 Monthly (Upselling)                   
+     
+    if T1.labels[0]== 2:   # cluster 2
+        bundle.append(T1.labels[0])
+        if len(T1) == 0 :
+            bundle.append('BTL 4G Bundle 7 Weekly')
+            bundle.append('BTL 4G Bundle 8 Weekly')
+        elif len(T1) == 1 :
+            if T1.bundle_name[0] == 'BTL 4G Bundle 7 Weekly':
+                    bundle.append('BTL 4G Bundle 7 Weekly')
+                    bundle.append('BTL 4G Bundle 8 Weekly')
+            elif T1.bundle_name[0] == 'BTL 4G Bundle 8 Weekly':
+                    bundle.append('BTL 4G Bundle 8 Weekly')
+                    bundle.append('BTL 4G Bundle 9 Weekly')
+            else:
+                if T1.price_point[0] > 50 : # I want to prevent down - selling
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append('BTL 4G Bundle 9 Weekly')
+                else:
+                    bundle.append('BTL 4G Bundle 8 Weekly')
+                    bundle.append('BTL 4G Bundle 9 Weekly')
+        else:     
+            if T1.price_point[1] > 50:  # I want to prevent down - selling
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append(T1.bundle_name[1])
+            else:
+                    bundle.append(T1.bundle_name[0])
+                    bundle.append('BTL 4G Bundle 8 Weekly')# Upselling
+                    
+    return bundle
+
 
 
 st.markdown("### rc_bundle_kmeans ")
