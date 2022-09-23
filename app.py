@@ -19,7 +19,7 @@ df_BTL_subscriptions=pd.read_csv('./df_data_BTL_subscriptions.csv', sep=',',enco
 df_BTL_sum_revenu=pd.read_csv('./df_data_BTL_sum_revenu.csv', sep=',',encoding= 'utf-8')
 df_sum_revenu=pd.read_csv('./top_bundle_sum_revenu.csv', sep=',',encoding= 'utf-8')
 #Dataset of unsubs
-df_recom_2bundle_unsubs=pd.read_csv('./unsubs_recomend_databtl.csv', sep=',',encoding= 'utf-8')
+df_recom_2bundle_unsubs=pd.read_csv('./unsubs_recomend_data_btl.csv', sep=',',encoding= 'utf-8')
 # Data for col_filter
 cf_final_dataset=pd.read_csv('./cf_final_dataset.csv', sep=',',encoding= 'utf-8')
 # Data agreg BTL : price of BTL and user_Id, bundle_Id
@@ -87,7 +87,16 @@ with st.expander(" Top 10 Bundlle by revenu Globaly"):
 ##                                                                                                                                   ##
 #######################################################################################################################################
 
-st.sidebar.markdown("### Bundle_collaboratif_filtering_engine ")
+st.markdown("### Bundle_collaboratif_filtering_engine for unsubs ")
+# tto select a user for non-subscribers
+aa= st.selectbox("Select USer", pd.unique(df_recom_2bundle_unsubs["msisdn_id"]))
+#Propose 2 bunble 
+if aa:
+    df_recom_2bundle_unsubs1 = df_recom_2bundle_unsubs[df_recom_2bundle_unsubs['msisdn_id'] == aa]
+    st.dataframe(df_recom_2bundle_unsubs1[['msisdn_id','Data_BTL_offers_1','Data_BTL_offers_2']])
+
+
+st.markdown("### Bundle_collaboratif_filtering_engine ")
 with st.container():
     final_dataset= cf_final_dataset[['bundle_name','id_bundle','msisdn_id_x','sum_subscriptions']]
     df_user_item_matrix = final_dataset.pivot(index='id_bundle',columns='msisdn_id_x',values='sum_subscriptions').fillna(0)
@@ -125,7 +134,7 @@ with st.container():
                 else:
                     return "No movies found. Please check your input"
 # Select user
-aaa= st.sidebar.selectbox("Select USer", pd.unique(cf_final_dataset["msisdn_id_x"]))
+aaa= st.selectbox("Select USer", pd.unique(cf_final_dataset["msisdn_id_x"]))
 
 if aaa:
     df_recom = cf_final_dataset[cf_final_dataset['msisdn_id_x'] == aaa]
@@ -135,6 +144,20 @@ if aaa:
     #Recover its price
     price_a=df_recom1['price_point'].iloc[0]
 
+    user_Nbr_subs=df_recom.groupby(['msisdn_id_x'])['sum_subscriptions'].sum()
+    user_Nbr_subs=pd.DataFrame(user_Nbr_subs)
+    user_Nbr_subs=user_Nbr_subs['sum_subscriptions'].iloc[0]
+    users_bunble_maxSubs=df_recom.sort_values(by=['sum_subscriptions'],ascending=False)
+    users_bunble_maxSubs=users_bunble_maxSubs[['bundle_name','sum_subscriptions']]
+
+
+    user_Nbr_subs=int(user_Nbr_subs)
+    col1, col2 = st.columns(2)
+
+    col1.metric(label="Total subscriptions", value=user_Nbr_subs,
+        delta_color="inverse")
+    col2.write(users_bunble_maxSubs.head(3))
+
     # Sumilars items recommendation
     recom_content_content=get_bundle_recommendation(a)
     # aggregated with prices
@@ -143,15 +166,9 @@ if aaa:
     recom_content_content2=recom_content_content2[recom_content_content2['price_point']>price_a]
     recom_content_content2=recom_content_content2.sort_values(by=['price_point'],ascending=True)
     recom_content_content2=pd.DataFrame(recom_content_content2)
-    st.sidebar.write(recom_content_content2.head(2))
+    st.write(recom_content_content2.head(2))
 
-st.sidebar.markdown("###  Recommendation for unsubscribe bundle customers ")
-# tto select a user for non-subscribers
-aa= st.sidebar.selectbox("Select USer", pd.unique(df_recom_2bundle_unsubs["msisdn_id"]))
-#Propose 2 bunble 
-if aa:
-    df_recom_2bundle_unsubs1 = df_recom_2bundle_unsubs[df_recom_2bundle_unsubs['msisdn_id'] == aa]
-    st.sidebar.dataframe(df_recom_2bundle_unsubs1[['msisdn_id','Data_BTL_offers_1','Data_BTL_offers_2']])
+
 
 #######################################################################################################################################
 ##                                                                                                                                   ##
@@ -267,11 +284,24 @@ def reco(num):
     return bundle, st.write(bundle)
 
 
-
 st.markdown("### rc_bundle_kmeans ")
 # tto select a user for non-subscribers
 ac= st.selectbox("Select  user for Kmeanss", pd.unique(df_data_BTL["msisdn_id"]))
 #Propose 2 bunble 
 if ac:
-    reco(ac)
+    df_user_info=df_data_BTL[df_data_BTL["msisdn_id"]==ac]
+    user_Nbr_subs=df_user_info.groupby(['msisdn_id'])['sum_subscriptions'].sum()
+    user_Nbr_subs=pd.DataFrame(user_Nbr_subs)
+    user_Nbr_subs=user_Nbr_subs['sum_subscriptions'].iloc[0]
+    users_bunble_maxSubs=df_user_info.sort_values(by=['sum_subscriptions'],ascending=False)
+    users_bunble_maxSubs=users_bunble_maxSubs[['bundle_name','sum_subscriptions']]
+
+    user_Nbr_subs=int(user_Nbr_subs)
+    col1, col2 = st.columns(2)
+
+    col1.metric(label="Total subscriptions", value=user_Nbr_subs,
+        delta_color="inverse")
+    col2.write(users_bunble_maxSubs.head(3))
+  
+
     st.write(reco(ac))
