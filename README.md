@@ -5,7 +5,7 @@ to run in local:
 
     streamlit run app.py 
 
-to run on line with heroku : https://recom-bundle.herokuapp.com/
+to run on line with heroku : https://rc-bundle.herokuapp.com/
 
  2 BTL bundles recommende for each customers.
 
