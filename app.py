@@ -19,7 +19,7 @@ df_BTL_subscriptions=pd.read_csv('./df_data_BTL_subscriptions.csv', sep=',',enco
 df_BTL_sum_revenu=pd.read_csv('./df_data_BTL_sum_revenu.csv', sep=',',encoding= 'utf-8')
 df_sum_revenu=pd.read_csv('./top_bundle_sum_revenu.csv', sep=',',encoding= 'utf-8')
 #Dataset of unsubs
-df_recom_2bundle_unsubs=pd.read_csv('./unsubs_recomend_data_btl.csv', sep=',',encoding= 'utf-8')
+df_recom_2bundle_unsubs=pd.read_csv('./unsubs_recomend_databtl.csv', sep=',',encoding= 'utf-8')
 # Data for col_filter
 cf_final_dataset=pd.read_csv('./cf_final_dataset.csv', sep=',',encoding= 'utf-8')
 # Data agreg BTL : price of BTL and user_Id, bundle_Id
