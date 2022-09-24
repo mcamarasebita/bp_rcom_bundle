@@ -87,7 +87,7 @@ with st.expander(" Top 10 Bundlle by revenu Globaly"):
 ##                                                                                                                                   ##
 #######################################################################################################################################
 
-st.markdown("### Bundle_collaboratif_filtering_engine for unsubs ")
+st.markdown("### Recommendation for unsubscribe customers ")
 # tto select a user for non-subscribers
 aa= st.selectbox("Select USer", pd.unique(df_recom_2bundle_unsubs["msisdn_id"]))
 #Propose 2 bunble 
@@ -156,6 +156,7 @@ if aaa:
 
     col1.metric(label="Total subscriptions", value=user_Nbr_subs,
         delta_color="inverse")
+    col2.write('Users ,the last most subscribed')
     col2.write(users_bunble_maxSubs.head(3))
 
     # Sumilars items recommendation
@@ -166,6 +167,7 @@ if aaa:
     recom_content_content2=recom_content_content2[recom_content_content2['price_point']>price_a]
     recom_content_content2=recom_content_content2.sort_values(by=['price_point'],ascending=True)
     recom_content_content2=pd.DataFrame(recom_content_content2)
+    st.write('Recommended')
     st.write(recom_content_content2.head(2))
 
 
@@ -301,7 +303,8 @@ if ac:
 
     col1.metric(label="Total subscriptions", value=user_Nbr_subs,
         delta_color="inverse")
+    col2.write('Users ,the last most subscribed')
     col2.write(users_bunble_maxSubs.head(3))
   
-
+    st.write('Recommended')
     st.write(reco(ac))
